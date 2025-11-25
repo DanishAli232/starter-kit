@@ -16,18 +16,18 @@ export default function Logo({ settings }: { settings: Settings }) {
   if (!image) return null;
   return (
     <Image
+      onClick={() => (window.location.href = "/")}
       src={image}
       alt="logo"
       width={50}
       height={50}
       unoptimized
       className={cn(
-        `w-[${settings?.logo_setting === "horizontal" ? "60%" : "30%"}] h-full object-cover rounded-md transition-opacity duration-300 min-w-[110px]`,
+        `w-[${settings?.logo_setting === "horizontal" ? "60%" : "100px"}] h-full cursor-pointer hover:scale-102 object-cover rounded-md transition-opacity duration-300`,
         "opacity-100"
       )}
       style={{
-        width: settings?.logo_setting === "horizontal" ? "60%" : "30%",
-        minWidth: "110px",
+        width: settings?.logo_setting === "horizontal" ? "60%" : "100px",
       }}
       priority
     />

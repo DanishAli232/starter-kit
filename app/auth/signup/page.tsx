@@ -76,22 +76,25 @@ export default function SignUp() {
 
   return (
     <>
-      <div className="min-h-screen flex items-center justify-center  py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8 bg-sidebar hover:bg-sidebar-hover p-8 rounded-lg shadow">
+      <div className="min-h-screen flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-6 sm:space-y-8 bg-sidebar hover:bg-sidebar-hover p-4 sm:p-6 lg:p-8 rounded-lg shadow">
           <div className="flex flex-col items-center gap-2">
             <Logo settings={settings as Settings} />
 
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+            <h2 className="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">
               Create an account
             </h2>
-            <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-2 text-center text-xs sm:text-sm text-gray-600 dark:text-gray-400 px-2">
               We just need a few details to get you started.
             </p>
           </div>
 
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <form
+            className="mt-6 sm:mt-8 space-y-4 sm:space-y-6"
+            onSubmit={handleSubmit}
+          >
             {error && (
-              <div className="text-red-600 dark:text-red-400 text-sm text-center">
+              <div className="text-red-600 dark:text-red-400 text-xs sm:text-sm text-center px-2">
                 {error}
               </div>
             )}
@@ -99,7 +102,7 @@ export default function SignUp() {
               <div>
                 <Label
                   htmlFor={`${id}-firstName`}
-                  className="dark:text-gray-200"
+                  className="dark:text-gray-200 text-sm sm:text-base"
                 >
                   First Name
                 </Label>
@@ -111,13 +114,13 @@ export default function SignUp() {
                   value={formData.firstName}
                   onChange={handleChange}
                   required
-                  className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                  className="dark:bg-gray-700 dark:text-white dark:border-gray-600 h-10 sm:h-11 text-sm sm:text-base"
                 />
               </div>
               <div>
                 <Label
                   htmlFor={`${id}-lastName`}
-                  className="dark:text-gray-200"
+                  className="dark:text-gray-200 text-sm sm:text-base"
                 >
                   Last Name
                 </Label>
@@ -129,11 +132,14 @@ export default function SignUp() {
                   value={formData.lastName}
                   onChange={handleChange}
                   required
-                  className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                  className="dark:bg-gray-700 dark:text-white dark:border-gray-600 h-10 sm:h-11 text-sm sm:text-base"
                 />
               </div>
               <div>
-                <Label htmlFor={`${id}-email`} className="dark:text-gray-200">
+                <Label
+                  htmlFor={`${id}-email`}
+                  className="dark:text-gray-200 text-sm sm:text-base"
+                >
                   Email
                 </Label>
                 <Input
@@ -144,13 +150,13 @@ export default function SignUp() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                  className="dark:bg-gray-700 dark:text-white dark:border-gray-600 h-10 sm:h-11 text-sm sm:text-base"
                 />
               </div>
               <div>
                 <Label
                   htmlFor={`${id}-password`}
-                  className="dark:text-gray-200"
+                  className="dark:text-gray-200 text-sm sm:text-base"
                 >
                   Password
                 </Label>
@@ -162,21 +168,24 @@ export default function SignUp() {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                  className="dark:bg-gray-700 dark:text-white dark:border-gray-600 h-10 sm:h-11 text-sm sm:text-base"
                 />
               </div>
             </div>
 
             <Button
               type="submit"
-              className="w-full bg-[#ec4899] hover:bg-[#ec4899]/90 text-white cursor-pointer"
+              className="w-full text-white p-2 sm:p-2.5 rounded-md cursor-pointer hover:shadow-sm hover:opacity-90 text-sm sm:text-base h-10 sm:h-11"
               disabled={isLoading}
+              style={{
+                backgroundColor: settings?.primary_color || "#ec4899",
+              }}
             >
               {isLoading ? "Signing up..." : "Sign up"}
             </Button>
 
             <div className="space-y-2 text-center">
-              <p className="text-muted-foreground text-xs dark:text-gray-400">
+              <p className="text-muted-foreground text-xs dark:text-gray-400 px-2">
                 By signing up you agree to our{" "}
                 <Link
                   href="/terms"
@@ -186,7 +195,7 @@ export default function SignUp() {
                 </Link>
                 .
               </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                 Already have an account?{" "}
                 <Link
                   href="/auth/login"

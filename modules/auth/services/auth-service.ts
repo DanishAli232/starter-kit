@@ -3,7 +3,7 @@ import { supabase } from "@/lib/supabase-auth-client";
 import { supabaseServerClient } from "@/lib/supabase-server-client";
 import { rolesService } from "@/modules/roles";
 import { usersService } from "@/modules/users";
-
+import { cookies } from 'next/headers'
 export interface AuthSignupData {
   email: string;
   password: string;
@@ -76,6 +76,7 @@ export const authService = {
   },
 
   signOut: async () => {
+    
     const { error } = await supabaseServerClient().auth.signOut();
    
     if (error) throw error;

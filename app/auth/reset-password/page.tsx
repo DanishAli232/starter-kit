@@ -185,13 +185,13 @@ function ResetPasswordContent() {
 
   if (isValidSession === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center py-12 px-4 bg-muted/30">
+      <div className="min-h-screen flex items-center justify-center py-8 sm:py-12 px-4 bg-muted/30">
         <Card className="max-w-md w-full">
-          <CardContent className="pt-6">
+          <CardContent className="pt-4 sm:pt-6 px-4 sm:px-6">
             <div className="flex justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+              <div className="h-6 w-6 sm:h-8 sm:w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
             </div>
-            <p className="text-center mt-4 text-muted-foreground">
+            <p className="text-center mt-4 text-xs sm:text-sm text-muted-foreground">
               Verifying reset link...
             </p>
           </CardContent>
@@ -202,28 +202,28 @@ function ResetPasswordContent() {
 
   if (isValidSession === false) {
     return (
-      <div className="min-h-screen flex items-center justify-center py-12 px-4 bg-muted/30">
+      <div className="min-h-screen flex items-center justify-center py-8 sm:py-12 px-4 bg-muted/30">
         <Card className="max-w-md w-full">
-          <CardHeader className="text-center">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10 mb-4">
-              <XCircle className="h-8 w-8 text-destructive" />
+          <CardHeader className="text-center px-4 sm:px-6 pt-4 sm:pt-6">
+            <div className="mx-auto flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-destructive/10 mb-3 sm:mb-4">
+              <XCircle className="h-6 w-6 sm:h-8 sm:w-8 text-destructive" />
             </div>
-            <CardTitle className="text-2xl font-bold">
+            <CardTitle className="text-xl sm:text-2xl font-bold">
               Invalid Reset Link
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs sm:text-sm">
               This password reset link is invalid or has expired.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <Button className="w-full" size="lg" asChild>
+          <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+            <div className="space-y-3 sm:space-y-4">
+              <Button className="w-full h-10 sm:h-11 text-sm sm:text-base" size="lg" asChild>
                 <Link href="/auth/forgot-password">Request New Reset Link</Link>
               </Button>
               <div className="text-center">
                 <Link
                   href="/auth/login"
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Back to Sign In
                 </Link>
@@ -236,26 +236,26 @@ function ResetPasswordContent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 bg-muted/30">
+    <div className="min-h-screen flex items-center justify-center py-8 sm:py-12 px-4 bg-muted/30">
       <Card className="max-w-md w-full">
-        <CardHeader className="space-y-4 text-center">
+        <CardHeader className="space-y-3 sm:space-y-4 text-center px-4 sm:px-6 pt-4 sm:pt-6">
           <div className="flex justify-center">
             <Logo settings={settings as Settings} />
           </div>
-          <CardTitle className="text-3xl font-bold">
+          <CardTitle className="text-2xl sm:text-3xl font-bold">
             Create New Password
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-xs sm:text-sm px-2">
             Your new password must be different from previously used passwords.
           </CardDescription>
         </CardHeader>
 
-        <CardContent>
-          <form className="space-y-6" onSubmit={handleSubmit}>
+        <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
+          <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <Label htmlFor="password">New Password</Label>
+              <Label htmlFor="password" className="text-sm sm:text-base">New Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                <Lock className="absolute left-3 top-3 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                 <Input
                   id="password"
                   placeholder="Enter new password"
@@ -263,7 +263,7 @@ function ResetPasswordContent() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="pl-10 pr-10"
+                  className="pl-9 sm:pl-10 pr-9 sm:pr-10 h-10 sm:h-11 text-sm sm:text-base"
                   disabled={isLoading}
                 />
                 <button
@@ -272,18 +272,18 @@ function ResetPasswordContent() {
                   className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
+                    <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
                   ) : (
-                    <Eye className="h-5 w-5" />
+                    <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
                   )}
                 </button>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword" className="text-sm sm:text-base">Confirm Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                <Lock className="absolute left-3 top-3 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                 <Input
                   id="confirmPassword"
                   placeholder="Confirm new password"
@@ -291,7 +291,7 @@ function ResetPasswordContent() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="pl-10 pr-10"
+                  className="pl-9 sm:pl-10 pr-9 sm:pr-10 h-10 sm:h-11 text-sm sm:text-base"
                   disabled={isLoading}
                 />
                 <button
@@ -300,21 +300,21 @@ function ResetPasswordContent() {
                   className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
                 >
                   {showConfirmPassword ? (
-                    <EyeOff className="h-5 w-5" />
+                    <EyeOff className="h-4 w-4 sm:h-5 sm:w-5" />
                   ) : (
-                    <Eye className="h-5 w-5" />
+                    <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
                   )}
                 </button>
               </div>
             </div>
 
             {/* Password Requirements */}
-            <Alert>
+            <Alert className="p-3 sm:p-4">
               <AlertDescription>
-                <p className="text-sm font-semibold mb-2">
+                <p className="text-xs sm:text-sm font-semibold mb-2">
                   Password must contain:
                 </p>
-                <ul className="space-y-1 text-sm">
+                <ul className="space-y-1.5 text-xs sm:text-sm">
                   <li
                     className={`flex items-center gap-2 ${
                       passwordStrength.hasMinLength
@@ -323,11 +323,11 @@ function ResetPasswordContent() {
                     }`}
                   >
                     {passwordStrength.hasMinLength ? (
-                      <CheckCircle2 className="h-4 w-4" />
+                      <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
                     ) : (
-                      <div className="h-4 w-4 rounded-full border-2" />
+                      <div className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full border-2 flex-shrink-0" />
                     )}
-                    At least 8 characters
+                    <span>At least 8 characters</span>
                   </li>
                   <li
                     className={`flex items-center gap-2 ${
@@ -337,11 +337,11 @@ function ResetPasswordContent() {
                     }`}
                   >
                     {passwordStrength.hasUpperCase ? (
-                      <CheckCircle2 className="h-4 w-4" />
+                      <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
                     ) : (
-                      <div className="h-4 w-4 rounded-full border-2" />
+                      <div className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full border-2 flex-shrink-0" />
                     )}
-                    One uppercase letter
+                    <span>One uppercase letter</span>
                   </li>
                   <li
                     className={`flex items-center gap-2 ${
@@ -351,11 +351,11 @@ function ResetPasswordContent() {
                     }`}
                   >
                     {passwordStrength.hasLowerCase ? (
-                      <CheckCircle2 className="h-4 w-4" />
+                      <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
                     ) : (
-                      <div className="h-4 w-4 rounded-full border-2" />
+                      <div className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full border-2 flex-shrink-0" />
                     )}
-                    One lowercase letter
+                    <span>One lowercase letter</span>
                   </li>
                   <li
                     className={`flex items-center gap-2 ${
@@ -365,11 +365,11 @@ function ResetPasswordContent() {
                     }`}
                   >
                     {passwordStrength.hasNumber ? (
-                      <CheckCircle2 className="h-4 w-4" />
+                      <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
                     ) : (
-                      <div className="h-4 w-4 rounded-full border-2" />
+                      <div className="h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full border-2 flex-shrink-0" />
                     )}
-                    One number
+                    <span>One number</span>
                   </li>
                 </ul>
               </AlertDescription>
@@ -377,7 +377,7 @@ function ResetPasswordContent() {
 
             <Button
               type="submit"
-              className="w-full text-white p-2 rounded-md cursor-pointer transition-colors hover:shadow-sm hover:opacity-90"
+              className="w-full text-white p-2 sm:p-2.5 rounded-md cursor-pointer transition-colors hover:shadow-sm hover:opacity-90 text-sm sm:text-base h-10 sm:h-11"
               size="lg"
               disabled={isLoading || !isPasswordStrong}
               style={{
@@ -390,7 +390,7 @@ function ResetPasswordContent() {
             <div className="text-center">
               <Link
                 href="/auth/login"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 Back to Sign In
               </Link>

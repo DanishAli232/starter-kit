@@ -78,9 +78,7 @@ export default function SideBarLayout({
     teams: [
       {
         name:
-          settings?.site_name ||
-          process.env.NEXT_PUBLIC_SITE_NAME ||
-          "Starter Kit.",
+          settings?.site_name || process.env.NEXT_PUBLIC_SITE_NAME || "Acme.",
         logo:
           settings?.logo_url ||
           process.env.NEXT_PUBLIC_LOGO_URL ||

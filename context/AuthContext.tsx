@@ -42,7 +42,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Define public routes that don't require authentication
   const PUBLIC_ROUTES = [
     "/auth/login",
-    "/auth/sign-up",
     "/auth/signup",
     "/auth/forgot-password",
     "/auth/reset-password",
@@ -52,7 +51,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   ];
 
   // Define routes that authenticated users should be redirected from (e.g., login page)
-  const AUTH_ROUTES = ["/auth/login", "/auth/sign-up"];
+  const AUTH_ROUTES = ["/auth/login", "/auth/signup"];
 
   // Function to get user data from Supabase and user_profile table
   const fetchUserData = async () => {
@@ -72,7 +71,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       } else {
         if (user) {
-          // signOut();
+          signOut();
         }
         setUser(null);
         setUserProfile(null);

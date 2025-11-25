@@ -63,18 +63,18 @@ export default function Verify() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-sidebar hover:bg-sidebar-hover p-8 rounded-lg shadow">
+    <div className="min-h-screen flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-6 sm:space-y-8 bg-sidebar hover:bg-sidebar-hover p-4 sm:p-6 lg:p-8 rounded-lg shadow">
         <div className="flex flex-col items-center gap-2">
           <Logo settings={settings as Settings} />
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+          <h2 className="mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">
             Email Verification
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-center text-xs sm:text-sm text-gray-600 dark:text-gray-400 px-2">
             {message}
           </p>
-          <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-md border border-blue-100 dark:border-blue-800">
-            <p className="text-sm text-blue-800 dark:text-blue-200">
+          <div className="mt-4 p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/30 rounded-md border border-blue-100 dark:border-blue-800">
+            <p className="text-xs sm:text-sm text-blue-800 dark:text-blue-200">
               <span className="font-semibold block mb-1">Important:</span>
               Please verify your email within the next 2 hours (by{" "}
               {expiryTime.toLocaleTimeString([], {
@@ -87,12 +87,12 @@ export default function Verify() {
           </div>
         </div>
 
-        <div className="mt-6 space-y-4">
-          <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-md border border-gray-100 dark:border-gray-700">
-            <h3 className="text-md font-medium text-gray-900 dark:text-white mb-2">
+        <div className="mt-4 sm:mt-6 space-y-3 sm:space-y-4">
+          <div className="bg-gray-50 dark:bg-gray-800/50 p-3 sm:p-4 rounded-md border border-gray-100 dark:border-gray-700">
+            <h3 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white mb-2">
               Verification Instructions:
             </h3>
-            <ol className="list-decimal pl-5 space-y-2 text-sm text-gray-600 dark:text-gray-400">
+            <ol className="list-decimal pl-4 sm:pl-5 space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               <li>Check your email inbox for a message</li>
               <li>If you don't see it, check your spam or junk folder</li>
               <li>Click on the verification link in the email</li>
@@ -104,7 +104,7 @@ export default function Verify() {
           <Button
             type="button"
             onClick={handleResendVerification}
-            className="w-full text-white p-2 rounded-md cursor-pointer transition-colors hover:shadow-sm hover:opacity-90"
+            className="w-full text-white p-2 sm:p-2.5 rounded-md cursor-pointer transition-colors hover:shadow-sm hover:opacity-90 text-sm sm:text-base h-10 sm:h-11"
             style={{
               backgroundColor: settings?.primary_color || "#ec4899",
             }}
