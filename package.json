@@ -8,10 +8,15 @@
     "start": "next start",
     "lint": "next lint",
     "supabase:init": "npx supabase init",
-    "supabase:link": "npx supabase link --project-ref wedlgsktjloofuluimwo",
+    "supabase:login": "npx supabase login",
+    "supabase:link": "npx supabase link",
+    "db:push": "npx supabase db push",
     "db:migrate": "npx supabase db push",
-    "db:reset": "npx supabase db reset --linked",
-    "db:status": "npx supabase db status"
+    "db:pull": "npx supabase db pull",
+    "db:reset": "npx supabase db reset",
+    "db:status": "npx supabase db status",
+    "migration:new": "npx supabase migration new",
+    "types:generate": "npx supabase gen types typescript --local > types/supabase.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

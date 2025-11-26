@@ -101,31 +101,55 @@ cd "starter kit 3.0"
 npm install
 ```
 
-3. **Setup Supabase**
+3. **Setup Supabase Database**
 
-   a. **For existing Supabase project:**
+Follow these steps to set up your Supabase database:
 
-   ```bash
-   # Link to existing project
-   npm run supabase:link
+a. **For new Supabase project (Recommended):**
 
-   # Push migrations
-   npm run db:migrate
-   ```
+```bash
+# Step 1: Initialize Supabase
+npx supabase init
 
-   b. **For new local Supabase setup:**
+# Step 2: Login to Supabase
+npx supabase login
 
-   ```bash
-   # Initialize Supabase
-   npm run supabase:init
+# Step 3: Link to your project (replace with your project-ref)
+npx supabase link
 
-   # Start local Supabase
-   npx supabase start
-   ```
+# Step 4: Push migrations to database
+npx supabase db push
+```
+
+b. **Using npm scripts (alternative):**
+
+```bash
+npm run supabase:init
+npm run supabase:login
+npm run supabase:link
+npm run db:push
+```
+
+c. **For local Supabase development:**
+
+```bash
+# Start local Supabase instance
+npx supabase start
+
+# Access Supabase Studio at: http://localhost:54323
+```
+
+**Important Notes:**
+
+- Get your `project-ref` from Supabase Dashboard > Settings > General > Reference ID
+- Migrations are located in `supabase/migrations/`
+- The main schema is in `20250501_create_base_schema.sql`
+- Email template setup is in `20250510_update_email_templates.sql`
+- **For detailed instructions, see `MIGRATION_GUIDE.md`**
 
 4. **Configure environment variables**
 
-   - Copy `.env.example` to `.env.local` (if available)
+   - Create `.env.local` file in the root directory (see template below)
    - Add your Supabase credentials
    - Configure email provider credentials
 
@@ -1485,13 +1509,42 @@ npm run start            # Start production server
 # Linting
 npm run lint             # Run ESLint
 
-# Supabase Commands
+# Supabase Setup
 npm run supabase:init    # Initialize Supabase locally
-npm run supabase:link    # Link to existing Supabase project
-npm run db:migrate       # Push migrations to database
-npm run db:reset         # Reset database (destructive)
-npm run db:status        # Check migration status
+npm run supabase:login   # Login to Supabase account
+npm run supabase:link    # Link to Supabase project (prompts for project-ref)
+
+# Database Management
+npm run db:push          # Push local migrations to remote database
+npm run db:migrate       # Alias for db:push
+npm run db:pull          # Pull remote schema to local migrations
+npm run db:reset         # Reset database and re-run all migrations (destructive)
+npm run db:status        # Check which migrations have been applied
+
+# Migrations
+npm run migration:new    # Create a new migration file
+
+# TypeScript
+npm run types:generate   # Generate TypeScript types from database schema
 ```
+
+### Database Command Examples
+
+```bash
+# Create a new migration
+npm run migration:new add_user_preferences
+
+# Check migration status
+npm run db:status
+
+# Push migrations to production
+npx supabase db push --project-ref production-project-id
+
+# Generate TypeScript types
+npm run types:generate
+```
+
+**📚 For detailed database migration instructions, see `MIGRATION_GUIDE.md`**
 
 ---
 
