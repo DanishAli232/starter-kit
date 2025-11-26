@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { authService, AuthSignupData } from '@/modules/auth/services/auth-service';
+import { signUp, AuthSignupData } from '@/modules/auth/services/auth-service';
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Call the signup service
-    const data = await authService.signUp({ email, password, firstName, lastName });
+    const data = await signUp({ email, password, firstName, lastName });
     
     return NextResponse.json(
       { message: 'User registered successfully', userId: data.user?.id },

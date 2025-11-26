@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GET_USER_BY_ID } from '@/modules/auth/services/auth-graphql';
 import { executeGraphQL } from '@/lib/graphql-client';
-import { authService } from '@/modules/auth';
+import { signIn } from '@/modules/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Authenticate with Supabase
-    const data = await authService.signIn(email, password);
+    const data = await signIn(email, password);
     if (!data.user || !data.session) {
       return NextResponse.json(
         { error: 'Authentication failed' },

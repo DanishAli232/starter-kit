@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase-auth-client';
+import { supabase, supabaseAdmin } from '@/lib/supabase-auth-client';
 import { DELETE_USER, GET_USERS, GET_USERS_BY_EMAIL, GET_USERS_BY_ID, GET_USERS_COUNT, GET_USERS_PAGINATION, INSERT_USER, UPDATE_USER } from "./users-graphql";
 import { executeGraphQLBackend } from "@/lib/graphql-server";
 
@@ -7,7 +7,7 @@ export const usersService = {
    * Insert a user
    */
   insertUser: async (data: any) => {
-    await executeGraphQLBackend(INSERT_USER, {
+  const response = await executeGraphQLBackend(INSERT_USER, {
       objects: [
         {
           id: data.id,
@@ -18,10 +18,10 @@ export const usersService = {
           is_active: true,
           profile_image: data.profile_image || null,
           full_name: data.full_name || null,
-          phone_number: data.phone_number || null,
         }
       ]
     })
+    return response
   },
   getUserByEmail: async (filter: any) => {
     const response = await executeGraphQLBackend(GET_USERS_BY_EMAIL, { filter });
@@ -97,7 +97,7 @@ export const usersService = {
       // Delete user from GraphQL database
       await executeGraphQLBackend(DELETE_USER, { id });
 
-      const {error} = await supabase.auth.admin.deleteUser(id);
+      const {error} = await supabaseAdmin.auth.admin.deleteUser(id);
       if (error) {
        throw new Error(error.message);
       }

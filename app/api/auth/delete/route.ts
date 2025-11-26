@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase-auth-client';
 import { usersService } from '@/modules/users/services/users-service';
-import { authService } from '@/modules/auth/services/auth-service';
+import { signOut } from '@/modules/auth/services/auth-service';
+import { supabaseAdmin } from '@/lib/supabase-auth-client';
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
     await usersService.deleteUser(id);
     // Delete user from Supabase Auth
-    const { error: authError } = await supabase.auth.admin.deleteUser(id);
+    const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(id);
     if (authError) {
       return NextResponse.json(
         { error: `Failed to delete user from Supabase Auth: ${authError.message}` },
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     // Delete user from GraphQL database
 
     // Sign out the user
-    await authService.signOut();
+    await signOut();
 
     return NextResponse.json(
       { message: 'User deleted successfully' },

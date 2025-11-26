@@ -14,7 +14,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { supabaseClient } from "@/lib/supabase-auth-client";
+import {
+  setSession,
+  verifyRecoveryOtp,
+  updatePassword,
+  signOut,
+} from "@/modules/auth/services/auth-service";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import Logo from "@/components/logo";
@@ -47,7 +52,6 @@ function ResetPasswordContent() {
 
         // Method 1: Check for hash fragment (access_token in URL)
         if (window.location.hash) {
-          console.log("Found hash in URL, processing...");
           const hashParams = new URLSearchParams(
             window.location.hash.substring(1)
           );
@@ -56,25 +60,20 @@ function ResetPasswordContent() {
           const type = hashParams.get("type");
 
           if (type === "recovery" && accessToken) {
-            console.log("Setting session with recovery token...");
-            const { data, error } = await supabaseClient.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken || "",
-            });
+            try {
+              const data = await setSession(accessToken, refreshToken || "");
 
-            if (error) {
+              if (data.session) {
+                setIsValidSession(true);
+                window.history.replaceState(null, "", window.location.pathname);
+                return;
+              }
+            } catch (error) {
               console.error("Session set error:", error);
               setIsValidSession(false);
               toast.error(
                 "Invalid or expired reset link. Please request a new one."
               );
-              return;
-            }
-
-            if (data.session) {
-              console.log("Session set successfully!");
-              setIsValidSession(true);
-              window.history.replaceState(null, "", window.location.pathname);
               return;
             }
           }
@@ -84,31 +83,23 @@ function ResetPasswordContent() {
         const tokenHash = searchParams.get("token_hash");
         const type = searchParams.get("type");
 
-        console.log("Query params:", { hasTokenHash: !!tokenHash, type });
-
         if (type === "recovery" && tokenHash) {
-          console.log("Found token_hash in query, verifying...");
+          try {
+            // Exchange the token_hash for a session
+            const data = await verifyRecoveryOtp(tokenHash);
 
-          // Exchange the token_hash for a session
-          const { data, error } = await supabaseClient.auth.verifyOtp({
-            token_hash: tokenHash,
-            type: "recovery",
-          });
-
-          if (error) {
+            if (data.session) {
+              setIsValidSession(true);
+              // Clean URL
+              window.history.replaceState(null, "", window.location.pathname);
+              return;
+            }
+          } catch (error) {
             console.error("Token verification error:", error);
             setIsValidSession(false);
             toast.error(
               "Invalid or expired reset link. Please request a new one."
             );
-            return;
-          }
-
-          if (data.session) {
-            console.log("Token verified, session created!");
-            setIsValidSession(true);
-            // Clean URL
-            window.history.replaceState(null, "", window.location.pathname);
             return;
           }
         }
@@ -155,29 +146,22 @@ function ResetPasswordContent() {
     setIsLoading(true);
 
     try {
-      console.log("Attempting to update password...");
-      const { error } = await supabaseClient.auth.updateUser({
-        password: password,
-      });
+      await updatePassword(password);
 
-      if (error) {
-        console.error("Password update error:", error);
-        toast.error(error.message || "Failed to reset password");
-      } else {
-        console.log("Password updated successfully!");
-        toast.success("Password reset successfully!");
+      toast.success("Password reset successfully!");
 
-        // Sign out user after password reset
-        await supabaseClient.auth.signOut();
+      // Sign out user after password reset
+      await signOut();
 
-        // Redirect to login
-        setTimeout(() => {
-          router.push("/auth/login?reset=success");
-        }, 1500);
-      }
+      // Redirect to login
+      setTimeout(() => {
+        router.push("/auth/login?reset=success");
+      }, 1500);
     } catch (err) {
       console.error("Password reset error:", err);
-      toast.error("Something went wrong. Please try again.");
+      toast.error(
+        err instanceof Error ? err.message : "Failed to reset password"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -217,7 +201,11 @@ function ResetPasswordContent() {
           </CardHeader>
           <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
             <div className="space-y-3 sm:space-y-4">
-              <Button className="w-full h-10 sm:h-11 text-sm sm:text-base" size="lg" asChild>
+              <Button
+                className="w-full h-10 sm:h-11 text-sm sm:text-base"
+                size="lg"
+                asChild
+              >
                 <Link href="/auth/forgot-password">Request New Reset Link</Link>
               </Button>
               <div className="text-center">
@@ -253,7 +241,9 @@ function ResetPasswordContent() {
         <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6">
           <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm sm:text-base">New Password</Label>
+              <Label htmlFor="password" className="text-sm sm:text-base">
+                New Password
+              </Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                 <Input
@@ -281,7 +271,9 @@ function ResetPasswordContent() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-sm sm:text-base">Confirm Password</Label>
+              <Label htmlFor="confirmPassword" className="text-sm sm:text-base">
+                Confirm Password
+              </Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                 <Input

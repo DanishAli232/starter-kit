@@ -2,7 +2,7 @@
 
 import { UserRoles } from "@/types/types";
 import { emailService } from "../email-service";
-import { supabase, supabaseClient } from "../supabase-auth-client";
+import { supabase, supabaseAdmin } from "../supabase-auth-client";
 import crypto from "crypto";
 
 /**
@@ -15,7 +15,7 @@ export async function deleteAuthUser(userId: string, type: string) {
     let data: any = null;   
     // First check if user exists in auth
     if(type === 'user'){
-      const { data: user, error: checkError } = await supabase.auth.admin.deleteUser(userId);
+      const { data: user, error: checkError } = await supabaseAdmin.auth.admin.deleteUser(userId);
       error = checkError;
       data = user;
     } 
@@ -51,7 +51,7 @@ export async function deleteAuthUser(userId: string, type: string) {
     let error: any = null;
     let data: any = null;
     if(type === UserRoles.USER){
-    const { data: userData, error: userError } = await supabase.auth.admin.createUser({
+    const { data: userData, error: userError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
@@ -85,7 +85,7 @@ export async function requestPasswordReset(email: string, type: string) {
     // 1. Find user by email
     let userId: string | null = null;
     if (type === "user") {
-      const { data, error } = await supabaseClient.from("user_profile").select("id").eq("email", email).single();
+      const { data, error } = await supabase().from("user_profile").select("id").eq("email", email).single();
       if (error) throw new Error(error.message);
       if (!data) throw new Error("User not found"); // Don't reveal
       userId = data.id;
@@ -97,7 +97,7 @@ export async function requestPasswordReset(email: string, type: string) {
     const expiresAt = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
 
     // 3. Store token in password_resets table
-    const { error: insertError } = await supabase
+    const { error: insertError } = await supabase()
       .from("password_resets")
       .insert({
         user_id: userId,
@@ -127,7 +127,7 @@ export async function requestPasswordReset(email: string, type: string) {
 export async function resetPassword(token: string, newPassword: string, type: string) {
   try {
     // 1. Find token in password_resets table
-    const { data, error } = await supabase
+    const { data, error } = await supabase()
       .from("password_resets")
       .select("id, user_id, expires_at, used_at")
       .eq("token", token)
@@ -137,13 +137,13 @@ export async function resetPassword(token: string, newPassword: string, type: st
     if (data.used_at) throw new Error("Token already used");
     if (new Date(data.expires_at) < new Date()) throw new Error("Token expired");
 
-    // 2. Update password using Supabase admin
+    // 2. Update password using Supabase() admin
     if (type !== "user") throw new Error("Only user type supported");
-    const { error: updateError } = await supabase.auth.admin.updateUserById(data.user_id, { password: newPassword });
+    const { error: updateError } = await supabase().auth.admin.updateUserById(data.user_id, { password: newPassword });
     if (updateError) throw new Error(updateError.message);
 
     // 3. Mark token as used
-    await supabase
+    await supabase()
       .from("password_resets")
       .update({ used_at: new Date().toISOString() })
       .eq("id", data.id);
@@ -159,7 +159,7 @@ export async function resetPassword(token: string, newPassword: string, type: st
  */
 export async function updateUserPassword(userId: string, newPassword: string) {
   try {
-    const { data, error } = await supabase.auth.admin.updateUserById(
+    const { data, error } = await supabase().auth.admin.updateUserById(
       userId,
       { password: newPassword }
     );

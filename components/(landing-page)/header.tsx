@@ -78,7 +78,6 @@ export default function Header() {
           {userProfile ? (
             <div className="hidden md:flex gap-2">
               <Button
-                variant="ghost"
                 size="sm"
                 className="text-sm"
                 onClick={() => router.push("/dashboard")}
@@ -149,7 +148,6 @@ export default function Header() {
             {userProfile ? (
               <div className="flex flex-col gap-3 pt-2 border-t">
                 <Button
-                  variant="outline"
                   className="w-full"
                   onClick={() => router.push("/dashboard")}
                 >

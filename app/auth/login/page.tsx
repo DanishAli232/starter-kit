@@ -9,10 +9,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Settings } from "@/modules/settings";
-import { authService } from "@/modules/auth";
+import {
+  resendVerificationEmail,
+  signInWithOtp,
+  verifyOtp,
+  signInWithOAuth,
+} from "@/modules/auth/services/auth-service";
 import { toast } from "sonner";
 import Logo from "@/components/logo";
-import { supabaseServerClient } from "@/lib/supabase-server-client";
 
 function LoginForm() {
   const id = useId();
@@ -83,9 +87,7 @@ function LoginForm() {
   const handleResendVerification = async () => {
     try {
       setIsEmailVerificationLoading(true);
-      // Since there's no direct method in authService for this,
-      // we'll need to use the signUp method which triggers email verification
-      await authService.resendVerificationEmail(email);
+      await resendVerificationEmail(email);
       toast.success("Verification email sent. Please check your inbox.");
       setEmailVerificationNeeded(false);
       setError(null);
@@ -107,15 +109,7 @@ function LoginForm() {
     setError(null);
 
     try {
-      const { error } = await supabaseServerClient().auth.signInWithOtp({
-        email: email,
-        options: {
-          shouldCreateUser: false,
-        },
-      });
-
-      if (error) throw error;
-
+      await signInWithOtp(email);
       setOtpSent(true);
       toast.success("OTP sent to your email!");
     } catch (error: any) {
@@ -131,13 +125,7 @@ function LoginForm() {
     setError(null);
 
     try {
-      const { data, error } = await supabaseServerClient().auth.verifyOtp({
-        email: email,
-        token: otp,
-        type: "email",
-      });
-
-      if (error) throw error;
+      const data = await verifyOtp(email, otp);
 
       if (data.session && data.user) {
         // Session created successfully
@@ -164,23 +152,16 @@ function LoginForm() {
       setIsSocialLoading(provider);
       setError(null);
 
-      const { error } = await supabaseServerClient().auth.signInWithOAuth({
+      const data = await signInWithOAuth(
         provider,
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-          queryParams: {
-            access_type: "offline",
-            prompt: "consent",
-          },
-        },
-      });
-
-      if (error) {
-        throw error;
-      }
+        `${window.location.origin}/auth/callback`
+      );
 
       // The user will be redirected to the OAuth provider
       // The callback will handle the rest of the flow
+      if (data.url) {
+        window.location.href = data.url;
+      }
     } catch (error: unknown) {
       console.error(`${provider} login error:`, error);
       toast.error(

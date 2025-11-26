@@ -11,7 +11,6 @@ export const INSERT_USER = `
         last_name
         full_name
         is_active
-        phone_number
         created_at
         profile_image
       }

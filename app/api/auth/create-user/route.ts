@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase-auth-client';
+import { supabase, supabaseAdmin } from '@/lib/supabase-auth-client';
 import { usersService } from '@/modules/users';
 import { rolesService } from '@/modules/roles';
 
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists using admin client
-    const { data: existingUsers, error: checkError } = await supabase.auth.admin.listUsers();
+    const { data: existingUsers, error: checkError } = await supabaseAdmin.auth.admin.listUsers();
     
     if (checkError) {
       console.error('Error checking existing users:', checkError);
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     // User doesn't exist, create user without email confirmation using admin client
-    const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
+    const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
       email: email,
       email_confirm: true, // Auto-confirm email - no verification needed
     });
@@ -61,7 +61,6 @@ export async function POST(request: NextRequest) {
         last_name: name.split(" ")[1] || "",
         full_name: name,
         is_active: true,
-        phone_number: phoneNumber,
       };
       await usersService.insertUser(payload);
       console.log('User profile created successfully');

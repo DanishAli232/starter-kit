@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { authService, AuthSignupData } from '@/modules/auth/services/auth-service';
+import { acceptInvite, AuthSignupData } from '@/modules/auth/services/auth-service';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Call the signup service
-    const data = await authService.acceptInvite(token, password );
+    const data = await acceptInvite(token, password );
     return NextResponse.json(
       { message: 'User accepted invite successfully' },
       { status: 201 }

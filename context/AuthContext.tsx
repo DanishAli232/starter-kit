@@ -1,15 +1,21 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import { Session, WeakPassword } from "@supabase/supabase-js";
-import { authService, AuthSignupData } from "@/modules/auth";
+import { AuthSignupData } from "@/modules/auth";
+import {
+  signIn as signInAction,
+  signOut as signOutAction,
+  signUp as signUpAction,
+} from "@/modules/auth/services/auth-service";
 
 import { usersService } from "@/modules/users";
 import { User, UserRoles } from "@/types/types";
 import { Settings, settingsService } from "@/modules/settings";
 import Loader from "@/components/loader";
-import { checkAuthentication } from "@/utils/check-authentication";
+import { supabase } from "@/lib/supabase-auth-client";
 import { LogOut, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { checkAuthentication } from "@/utils/check-authentication";
 
 type AuthContextType = {
   user: User | null;
@@ -56,38 +62,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // Function to get user data from Supabase and user_profile table
   const fetchUserData = async () => {
     try {
-      const { user, status } = await checkAuthentication();
+      const { user: userData, status } = await checkAuthentication();
 
-      if (user) {
-        checkRouteAccess(window.location.pathname, user);
+      if (userData) {
+        checkRouteAccess(window.location.pathname, userData as unknown as User);
 
-        setUser(user);
-        setSession(user as unknown as Session);
+        setUser(userData as unknown as User);
 
         // Fetch user profile_image data from user_profile table
-        const userData = await usersService.getUserById(user.id);
-        if (userData) {
-          setUserProfile(userData);
+        const userProfileData = await usersService.getUserById(
+          userData?.id as string
+        );
+        if (userProfileData) {
+          setUserProfile(userProfileData);
         }
       } else {
-        if (user) {
-          signOut();
-        }
         setUser(null);
         setUserProfile(null);
-        const getSettings = localStorage.getItem("UMS_PROJECT_SETTINGS");
-        if (getSettings) {
-          setSettings(JSON.parse(getSettings));
-        } else {
-          setSettings(null);
-        }
+        setSession(null);
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
       setUser(null);
       setUserProfile(null);
-      setSettings(null);
-      signOut();
+      setSession(null);
+      // signOut();
     }
     setLoading(false);
   };
@@ -136,7 +135,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signUp = async (data: AuthSignupData) => {
     try {
-      const result = await authService.signUp(data);
+      const result = await signUpAction(data);
 
       return result;
     } catch (error) {
@@ -147,7 +146,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const result = await authService.signIn(email, password);
+      // Call server action for sign in
+      const result = await signInAction(email, password);
+
+      // Refresh user data after successful sign in
+      await fetchUserData();
 
       return result;
     } catch (error) {
@@ -159,7 +162,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     try {
       setLoading(true);
-      await authService.signOut();
+      // Sign out on client side
+      const client = supabase();
+      await client.auth.signOut();
+
+      // Also call server action to clear server-side session
+      try {
+        await signOutAction();
+      } catch (serverError) {
+        console.error("Server sign out error:", serverError);
+      }
+
       setUser(null);
       setUserProfile(null);
       setSession(null);

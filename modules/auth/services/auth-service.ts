@@ -1,8 +1,12 @@
+"use server";
+
 import { emailService } from "@/lib/email-service";
-import { supabase } from "@/lib/supabase-auth-client";
-import { supabaseServerClient } from "@/lib/supabase-server-client";
+import { supabase, supabaseAdmin } from "@/lib/supabase-auth-client";
+import { createClient } from "@/lib/supabase-server-client";
 import { rolesService } from "@/modules/roles";
 import { usersService } from "@/modules/users";
+import { cookies } from "next/headers";
+
 export interface AuthSignupData {
   email: string;
   password: string;
@@ -14,8 +18,7 @@ export interface AuthSignupData {
 // Helper function to delay execution
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-export const authService = {
-  signUp: async ({ email, password, firstName, lastName, role_id = "" }: AuthSignupData) => {
+export async function signUp({ email, password, firstName, lastName, role_id = "" }: AuthSignupData) {
 
     
     // First check if user exists with the given email
@@ -33,7 +36,7 @@ export const authService = {
     }
     
     // Create the user in Supabase Auth if not exists
-    const { data, error } = await supabase.auth.signUp({ 
+    const { data, error } = await supabase().auth.signUp({ 
       email, 
       password, 
       options: { data: { first_name: firstName, last_name: lastName } } 
@@ -62,28 +65,31 @@ export const authService = {
     }
 
     return data;
-  },
+}
 
-  signIn: async (email: string, password: string) => {
-    const { data, error } = await supabaseServerClient().auth.signInWithPassword({
+export async function signIn(email: string, password: string) {
+    const cookieStore = await cookies();
+    const supabase = await createClient(cookieStore);
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
     });
     if (error) throw error;
 
     return data;
-  },
+}
 
-  signOut: async () => {
-    
-    const { error } = await supabaseServerClient().auth.signOut();
+export async function signOut() {
+    const cookieStore = await cookies();
+    const supabase = await createClient(cookieStore);
+    const { error } = await supabase.auth.signOut();
    
     if (error) throw error;
-  },
+}
 
-  sendInvites: async (emails: string[]) => {
+export async function sendInvites(emails: string[]) {
     for (const email of emails) {
-      const { data, error } = await supabase.auth.admin.createUser({
+      const { data, error } = await supabaseAdmin.auth.admin.createUser({
         email,
         email_confirm: false,
       });
@@ -112,22 +118,22 @@ export const authService = {
       }
       return data;
     }
-  },
+}
 
-  resendVerificationEmail: async (email: string) => {
-    const { data, error } = await supabase.auth.resend({
+export async function resendVerificationEmail(email: string) {
+    const { data, error } = await supabaseAdmin.auth.resend({
       type: "signup",
       email: email,
     });
 
     if (error) throw error;
     return data;
-  },
+}
 
-  acceptInvite: async (token: string, password: string) => {
+export async function acceptInvite(token: string, password: string) {
     try {
       // Exchange the token for a session
-      const { data: sessionData, error: sessionError } = await supabase.auth.admin.updateUserById(token, {
+      const { data: sessionData, error: sessionError } = await supabaseAdmin.auth.admin.updateUserById(token, {
         password: password,
         email_confirm:  true
       });
@@ -143,8 +149,9 @@ export const authService = {
       console.error('Error in acceptInvite:', error);
       throw error;
     }
-  },
-  deleteUser: async (id: string) => {
+}
+
+export async function deleteUser(id: string) {
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/auth/delete`, {
       method: 'POST',
       headers: {
@@ -155,12 +162,103 @@ export const authService = {
     if (!response.ok) {
       throw new Error('Failed to delete user');
     }
-    await authService.signOut();
+    await signOut();
     return response.json();
-  },
+}
 
-  onAuthStateChange: (callback: (event: any, session: any) => void) => {
-    return supabaseServerClient().auth.onAuthStateChange(callback);
-  }
+export async function onAuthStateChange(callback: (event: any, session: any) => void) {
+    const cookieStore = await cookies();
+    const supabase = await createClient(cookieStore);
+    return supabase.auth.onAuthStateChange(callback);
+}
 
-}; 
+export async function signInWithOtp(email: string) {
+    const cookieStore = await cookies();
+    const supabase = await createClient(cookieStore);
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email,
+      options: {
+        shouldCreateUser: false,
+      },
+    });
+
+    if (error) throw error;
+    return { success: true };
+}
+
+export async function verifyOtp(email: string, token: string) {
+    const cookieStore = await cookies();
+    const supabase = await createClient(cookieStore);
+    const { data, error } = await supabase.auth.verifyOtp({
+      email: email,
+      token: token,
+      type: "email",
+    });
+
+    if (error) throw error;
+    return data;
+}
+
+export async function signInWithOAuth(provider: "google" | "apple" | "facebook", redirectTo: string) {
+    const cookieStore = await cookies();
+    const supabase = await createClient(cookieStore);
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: redirectTo,
+        queryParams: {
+          access_type: "offline",
+          prompt: "consent",
+        },
+      },
+    });
+
+    if (error) throw error;
+    return data;
+}
+
+export async function resetPasswordForEmail(email: string, redirectTo: string) {
+    const cookieStore = await cookies();
+    const supabase = await createClient(cookieStore);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectTo,
+    });
+
+    if (error) throw error;
+    return { success: true };
+}
+
+export async function updatePassword(password: string) {
+    const cookieStore = await cookies();
+    const supabase = await createClient(cookieStore);
+    const { error } = await supabase.auth.updateUser({
+      password: password,
+    });
+
+    if (error) throw error;
+    return { success: true };
+}
+
+export async function verifyRecoveryOtp(tokenHash: string) {
+    const cookieStore = await cookies();
+    const supabase = await createClient(cookieStore);
+    const { data, error } = await supabase.auth.verifyOtp({
+      token_hash: tokenHash,
+      type: "recovery",
+    });
+
+    if (error) throw error;
+    return data;
+}
+
+export async function setSession(accessToken: string, refreshToken: string) {
+    const cookieStore = await cookies();
+    const supabase = await createClient(cookieStore);
+    const { data, error } = await supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
+
+    if (error) throw error;
+    return data;
+} 

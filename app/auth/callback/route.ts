@@ -1,7 +1,6 @@
 import { rolesService, usersService } from "@/modules";
 import { NextResponse } from "next/server";
-import { supabaseServerClient } from "@/lib/supabase-server-client";
-import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@/lib/supabase-server-client";
 import { cookies } from "next/headers";
 
 export async function GET(request: Request) {
@@ -11,34 +10,16 @@ export async function GET(request: Request) {
   const next = searchParams.get("next") || "/";
   
 
-  console.log("🚀 ~ GET ~ code:", code)
   if (code) {
     const cookieStore = await cookies();
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll();
-          },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              cookieStore.set(name, value, options);
-            });
-          },
-        },
-      }
-    );  
+    const supabase = await createClient(cookieStore);
     const { error } =
       await supabase.auth.exchangeCodeForSession(code);
-    console.log("🚀 ~ GET ~ error:", error)
     if (!error) {
       // Get the user
       const {
         data: { user },
       } = await supabase.auth.getUser();
-        console.log("🚀 ~ GET ~ user:", user)
 
       if (user) {
         // Check if the user has a profile

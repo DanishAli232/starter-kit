@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Settings } from "@/modules/settings";
-import { supabaseClient } from "@/lib/supabase-auth-client";
+import { resetPasswordForEmail } from "@/modules/auth/services/auth-service";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import Logo from "@/components/logo";
@@ -22,21 +22,20 @@ export default function ForgotPassword() {
 
     try {
       // Use Supabase's built-in password reset
-      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
-      });
+      await resetPasswordForEmail(
+        email,
+        `${window.location.origin}/auth/reset-password`
+      );
 
-      if (error) {
-        toast.error(error.message || "Failed to send reset email");
-      } else {
-        setIsEmailSent(true);
-        toast.success(
-          "If your email exists in our system, a reset link has been sent."
-        );
-      }
+      setIsEmailSent(true);
+      toast.success(
+        "If your email exists in our system, a reset link has been sent."
+      );
     } catch (err) {
       console.error("Password reset error:", err);
-      toast.error("Something went wrong. Please try again later.");
+      toast.error(
+        err instanceof Error ? err.message : "Failed to send reset email"
+      );
     } finally {
       setIsLoading(false);
     }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { authService } from "@/modules/auth";
+import { resendVerificationEmail } from "@/modules/auth/services/auth-service";
 import { toast } from "sonner";
 import Logo from "@/components/logo";
 import { Settings } from "@/types/types";
@@ -44,7 +44,7 @@ export default function Verify() {
 
     try {
       setIsLoading(true);
-      await authService.resendVerificationEmail(email);
+      await resendVerificationEmail(email);
       toast.success("Verification email sent. Please check your inbox.");
     } catch (error: any) {
       // If the error indicates user already exists, that's expected
