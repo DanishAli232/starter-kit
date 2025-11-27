@@ -20,6 +20,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from "@/components/ui/sidebar";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfileSettings } from "@/components/(dashboard)/settings/profile-settings";
 import { OrganizationSettings } from "@/components/(dashboard)/settings/organization-settings";
 import { AppearanceSettings } from "@/components/(dashboard)/settings/appearance-settings";
@@ -64,7 +65,7 @@ export default function SettingsDialog() {
   };
 
   return (
-    <div className="pt-6">
+    <div className="pt-4 sm:pt-6 px-2 sm:px-0">
       <div className="">
         <SidebarProvider className="items-start min-h-auto">
           <Sidebar collapsible="none" className="hidden md:flex ">
@@ -100,8 +101,32 @@ export default function SettingsDialog() {
           </Sidebar>
 
           <main className="flex flex-col w-full">
-            <ScrollArea className="h-[calc(100vh-110px)] overflow-y-auto">
-              <div className="flex flex-col gap-4 pl-4 pr-0 pt-0 pb-0 ">
+            {/* Mobile Tabs - Visible on mobile, hidden on desktop */}
+            <div className="md:hidden mb-4">
+              <Tabs value={activeSection} onValueChange={setActiveSection}>
+                <TabsList className="grid w-full grid-cols-3 h-auto p-1">
+                  {data.nav.map((item) => (
+                    <TabsTrigger
+                      key={item.name}
+                      value={item.name}
+                      className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 sm:py-2.5 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                    >
+                      {item.icon && (
+                        <item.icon
+                          className="h-4 w-4 sm:h-5 sm:w-5"
+                          aria-hidden="true"
+                        />
+                      )}
+                      <span className="hidden xs:inline">{item.name}</span>
+                      <span className="xs:hidden text-[10px]">{item.name}</span>
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
+            </div>
+
+            <ScrollArea className="h-[calc(100vh-110px)] sm:h-[calc(100vh-110px)] overflow-y-auto">
+              <div className="flex flex-col gap-4 md:pl-4 pr-0 pt-0 pb-0 ">
                 {renderSettingsContent()}
               </div>
             </ScrollArea>

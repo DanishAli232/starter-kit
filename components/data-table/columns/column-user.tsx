@@ -28,7 +28,7 @@ export function getUserColumns(
           `${row.original.first_name || ""} ${row.original.last_name || ""}`.trim();
 
         return (
-          <div className="flex items-center w-full">
+          <div className="flex items-center w-max">
             <Avatar className="border-foreground/10 border-[1px]">
               <AvatarImage
                 className=""

@@ -84,7 +84,7 @@ export default function UserManagementPage({ type }: { type: string }) {
   };
 
   return (
-    <div>
+    <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
       <DataTable
         data={listUsers || []}
         toolbar={
